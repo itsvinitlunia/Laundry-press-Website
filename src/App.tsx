@@ -46,6 +46,7 @@ interface UserData {
     washing: boolean;
     ironing: boolean;
     both: boolean;
+    drycleaning: boolean;
   };
 }
 
@@ -75,7 +76,7 @@ const serviceOptions: ServiceOption[] = [
     price: 2,
     description: 'Professional washing with premium detergents',
     icon: <Shirt className="w-8 h-8" />,
-    image: 'https://images.pexels.com/photos/6197119/pexels-photo-6197119.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/images/wash.jpeg'
   },
   {
     id: 'ironing',
@@ -83,7 +84,7 @@ const serviceOptions: ServiceOption[] = [
     price: 1.5,
     description: 'Expert ironing for crisp, wrinkle-free clothes',
     icon: <Zap className="w-8 h-8" />,
-    image: 'https://images.pexels.com/photos/4239146/pexels-photo-4239146.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/images/iron only.png'
   },
   {
     id: 'both',
@@ -91,7 +92,7 @@ const serviceOptions: ServiceOption[] = [
     price: 3,
     description: 'Complete service - washing + ironing',
     icon: <Package className="w-8 h-8" />,
-    image: 'https://images.pexels.com/photos/5591664/pexels-photo-5591664.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/images/iron and wash.jpeg'
   },
   {
     id: 'drycleaning',
@@ -99,7 +100,7 @@ const serviceOptions: ServiceOption[] = [
     price: 4,
     description: 'Premium dry cleaning for delicate and special fabrics',
     icon: <Lock className="w-8 h-8" />,
-    image: 'https://images.pexels.com/photos/3831825/pexels-photo-3831825.jpeg?auto=compress&cs=tinysrgb&w=400'
+    image: '/images/dryclean.jpeg'
   }
 ];
 
@@ -146,7 +147,8 @@ function App() {
     expressServices: {
       washing: false,
       ironing: false,
-      both: false
+      both: false,
+      drycleaning: false
     }
   });
   const [isEditingAddress, setIsEditingAddress] = useState(false);
@@ -258,13 +260,6 @@ function App() {
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent mb-2">LaundryGo</h1>
             <p className="text-gray-600">Professional laundry service at your doorstep</p>
-            <div className="mt-4">
-              <img 
-                src="https://images.pexels.com/photos/5591670/pexels-photo-5591670.jpeg?auto=compress&cs=tinysrgb&w=300" 
-                alt="Laundry basket with clean clothes" 
-                className="w-32 h-24 object-cover rounded-lg mx-auto shadow-md"
-              />
-            </div>
           </div>
 
           {/* Login type toggle */}
@@ -595,7 +590,7 @@ function App() {
   if (currentStep === 'service') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-50 to-white p-4">
-        <div className="max-w-md mx-auto pt-8">
+        <div className="max-w-2xl mx-auto pt-8">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent mb-2">Choose Your Services</h2>
             <p className="text-gray-600">Select one or multiple services that fit your needs</p>
@@ -665,7 +660,7 @@ function App() {
             )}
           </div>
 
-          <div className="space-y-4 mb-6">
+          <div className="space-y-10 mb-6">
             {serviceOptions.map((service) => {
               const isSelected = userData.services.includes(service.id);
               const clothCount = userData.clothCounts[service.id];
@@ -676,128 +671,130 @@ function App() {
               return (
                 <div
                   key={service.id}
-                  className={`bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg p-6 cursor-pointer transition-all duration-300 hover:scale-105 border-2 ${
+                  className={`bg-white/90 backdrop-blur-sm rounded-3xl shadow-xl p-0 cursor-pointer transition-all duration-300 hover:scale-105 border-2 ${
                     isSelected 
                       ? 'border-blue-500 shadow-2xl bg-gradient-to-r from-blue-50 to-blue-100' 
                       : 'border-white/20 hover:shadow-2xl'
                   }`}
+                  style={{ overflow: 'hidden', minHeight: '420px', display: 'flex', flexDirection: 'column' }}
                 >
-                  <div className="flex items-center justify-between mb-4" onClick={() => handleServiceToggle(service.id)}>
-                    <div className="flex items-center space-x-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg ${
-                        isSelected 
-                          ? 'bg-gradient-to-r from-blue-600 to-blue-400' 
-                          : 'bg-gradient-to-r from-blue-500 to-blue-300'
-                      }`}>
-                        {service.icon}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{service.name}</h3>
-                        <p className="text-sm text-gray-600">{service.description}</p>
-                        {userData.pickupTime === 'instant' && (
-                          <div className="text-xs text-blue-600 font-medium mt-1">
-                            {service.id === 'ironing' && 'Express: 1 hour delivery (+$1/item)'}
-                            {service.id === 'washing' && 'Express: 1 day delivery (+$0.5/item)'}
-                            {service.id === 'both' && 'Express: Same day delivery (+$1.5/item)'}
-                            {service.id === 'drycleaning' && 'Express: 1 day delivery (+$2/item)'}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <div className="text-right">
-                        <div className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
-                          ${service.price}
-                          {userData.pickupTime === 'instant' && expressCharge > 0 && (
-                            <span className="text-sm text-blue-600"> +${expressCharge}</span>
-                          )}
-                        </div>
-                        <div className="text-sm text-gray-500">per item</div>
-                      </div>
-                      {isSelected && (
-                        <CheckCircle className="w-6 h-6 text-blue-600" />
-                      )}
-                    </div>
-                  </div>
-                  
-                  {/* Express Service Toggle for Instant Pickup */}
-                  {isSelected && userData.pickupTime === 'instant' && (
-                    <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200" onClick={(e) => e.stopPropagation()}>
-                      <label className="flex items-center space-x-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={isExpress}
-                          onChange={(e) => setUserData(prev => ({
-                            ...prev,
-                            expressServices: {
-                              ...prev.expressServices,
-                              [service.id]: e.target.checked
-                            }
-                          }))}
-                          className="w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500"
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium text-blue-800">
-                            {service.id === 'ironing' && 'Express Ironing (1 Hour)'}
-                            {service.id === 'washing' && 'Express Washing (1 Day)'}
-                            {service.id === 'both' && 'Express Service (Same Day)'}
-                            {service.id === 'drycleaning' && 'Express Dry Cleaning (1 Day)'}
-                          </div>
-                          <div className="text-sm text-blue-600">
-                            +${expressCharge} per item
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  )}
-                  
-                  {/* Cloth Count Selection */}
-                  {isSelected && (
-                    <div className="mt-4 pt-4 border-t border-blue-200" onClick={(e) => e.stopPropagation()}>
-                      <div className="flex items-center justify-between mb-3">
-                        <span className="font-medium text-gray-900">Number of Clothes</span>
-                        <span className="text-sm text-blue-600 font-semibold">
-                          ${((service.price + expressCharge) * clothCount).toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-blue-200">
-                        <button
-                          onClick={() => setUserData(prev => ({
-                            ...prev,
-                            clothCounts: {
-                              ...prev.clothCounts,
-                              [service.id]: Math.max(0, prev.clothCounts[service.id] - 1)
-                            }
-                          }))}
-                          className="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors font-semibold text-blue-600"
-                        >
-                          -
-                        </button>
-                        <span className="text-xl font-bold text-gray-900 min-w-[3rem] text-center">
-                          {clothCount}
-                        </span>
-                        <button
-                          onClick={() => setUserData(prev => ({
-                            ...prev,
-                            clothCounts: {
-                              ...prev.clothCounts,
-                              [service.id]: prev.clothCounts[service.id] + 1
-                            }
-                          }))}
-                          className="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors font-semibold text-blue-600"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="w-full h-32 rounded-xl overflow-hidden">
+                  {/* Service Image Full Width */}
+                  <div className="w-full h-64 md:h-80 lg:h-[22rem] bg-gray-100 flex-shrink-0">
                     <img 
                       src={service.image} 
                       alt={service.name} 
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center rounded-t-3xl"
+                      style={{ display: 'block' }}
                     />
+                  </div>
+                  <div className="p-6 flex flex-col flex-1 justify-between">
+                    <div className="flex items-center justify-between mb-4" onClick={() => handleServiceToggle(service.id)}>
+                      <div className="flex items-center space-x-4">
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg ${
+                          isSelected 
+                            ? 'bg-gradient-to-r from-blue-600 to-blue-400' 
+                            : 'bg-gradient-to-r from-blue-500 to-blue-300'
+                        }`}>
+                          {service.icon}
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-900 text-lg md:text-xl mb-1">{service.name}</h3>
+                          <p className="text-sm text-gray-600 md:text-base leading-snug">{service.description}</p>
+                          {userData.pickupTime === 'instant' && (
+                            <div className="text-xs text-blue-600 font-medium mt-1">
+                              {service.id === 'ironing' && 'Express: 1 hour delivery (+$1/item)'}
+                              {service.id === 'washing' && 'Express: 1 day delivery (+$0.5/item)'}
+                              {service.id === 'both' && 'Express: Same day delivery (+$1.5/item)'}
+                              {service.id === 'drycleaning' && 'Express: 1 day delivery (+$2/item)'}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-3">
+                        <div className="text-right">
+                          <div className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent">
+                            ${service.price}
+                            {userData.pickupTime === 'instant' && expressCharge > 0 && (
+                              <span className="text-sm text-blue-600"> +${expressCharge}</span>
+                            )}
+                          </div>
+                          <div className="text-sm text-gray-500">per item</div>
+                        </div>
+                        {isSelected && (
+                          <CheckCircle className="w-6 h-6 text-blue-600" />
+                        )}
+                      </div>
+                    </div>
+                    {/* Express Service Toggle for Instant Pickup */}
+                    {isSelected && userData.pickupTime === 'instant' && (
+                      <div className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-200" onClick={(e) => e.stopPropagation()}>
+                        <label className="flex items-center space-x-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={isExpress}
+                            onChange={(e) => setUserData(prev => ({
+                              ...prev,
+                              expressServices: {
+                                ...prev.expressServices,
+                                [service.id]: e.target.checked
+                              }
+                            }))}
+                            className="w-4 h-4 text-blue-600 border-blue-300 rounded focus:ring-blue-500"
+                          />
+                          <div className="flex-1">
+                            <div className="font-medium text-blue-800">
+                              {service.id === 'ironing' && 'Express Ironing (1 Hour)'}
+                              {service.id === 'washing' && 'Express Washing (1 Day)'}
+                              {service.id === 'both' && 'Express Service (Same Day)'}
+                              {service.id === 'drycleaning' && 'Express Dry Cleaning (1 Day)'}
+                            </div>
+                            <div className="text-sm text-blue-600">
+                              +${expressCharge} per item
+                            </div>
+                          </div>
+                        </label>
+                      </div>
+                    )}
+                    {/* Cloth Count Selection */}
+                    {isSelected && (
+                      <div className="mt-4 pt-4 border-t border-blue-200" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="font-medium text-gray-900">Number of Clothes</span>
+                          <span className="text-sm text-blue-600 font-semibold">
+                            ${((service.price + expressCharge) * clothCount).toFixed(2)}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between bg-white rounded-xl p-3 border border-blue-200">
+                          <button
+                            onClick={() => setUserData(prev => ({
+                              ...prev,
+                              clothCounts: {
+                                ...prev.clothCounts,
+                                [service.id]: Math.max(0, prev.clothCounts[service.id] - 1)
+                              }
+                            }))}
+                            className="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors font-semibold text-blue-600"
+                          >
+                            -
+                          </button>
+                          <span className="text-xl font-bold text-gray-900 min-w-[3rem] text-center">
+                            {clothCount}
+                          </span>
+                          <button
+                            onClick={() => setUserData(prev => ({
+                              ...prev,
+                              clothCounts: {
+                                ...prev.clothCounts,
+                                [service.id]: prev.clothCounts[service.id] + 1
+                              }
+                            }))}
+                            className="w-10 h-10 bg-blue-100 hover:bg-blue-200 rounded-lg flex items-center justify-center transition-colors font-semibold text-blue-600"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               );
